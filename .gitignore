@@ -84,3 +84,5 @@ Carthage.checkout
 
 # rbenv
 .ruby-version
+SwiftWeather.xcscheme
+IDEWorkspaceChecks.plist
