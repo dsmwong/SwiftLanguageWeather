@@ -5,11 +5,12 @@
 
 import UIKit
 import FacebookShare
+import FBSDKShareKit
 import CoreSpotlight
 import MobileCoreServices
 
 //MARK: - UIViewController Properties
-class WeatherViewController: UIViewController {
+class WeatherViewController: UIViewController, SharingDelegate {
     
     //MARK: - IBOutlets
     @IBOutlet weak var locationLabel: UILabel!
@@ -103,13 +104,14 @@ class WeatherViewController: UIViewController {
     }
     
     func shareOnFacebook(){
-        let photo = Photo(image: #imageLiteral(resourceName: "background"), userGenerated: false)
-        let myContent = PhotoShareContent(photos: [photo])
-        let shareDialog = ShareDialog(content: myContent)
+        //let photo = SharePhoto(image: #imageLiteral(resourceName: "background"), userGenerated: false)
+        let myContent = SharePhotoContent()
+        myContent.photos = [SharePhoto(image: #imageLiteral(resourceName: "background"), userGenerated: false)]
+        let shareDialog = ShareDialog(fromViewController: self, content: myContent, delegate: self)
         shareDialog.mode = .native
-        shareDialog.failsOnInvalidData = true
+        //shareDialog.failsOnInvalidData = true
 
-        try? shareDialog.show()
+        shareDialog.show()
     }
     
     //MARK: Private Functions
@@ -141,5 +143,28 @@ class WeatherViewController: UIViewController {
                 }
             }
         }
+    }
+    
+    // FacebookShare SharingDelegate Implementation
+    
+    func sharer(_ sharer: Sharing, didCompleteWithResults results: [String: Any]) {
+        let title = "Share Success"
+        let message = "Succesfully shared: \(results)"
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    func sharer(_ sharer: Sharing, didFailWithError error: Error) {
+        let title = "Share Failed"
+        let message = "Sharing failed with error \(error)"
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    func sharerDidCancel(_ sharer: Sharing) {
+        let title = "Share Cancelled"
+        let message = "Sharing was cancelled by user."
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        self.present(alertController, animated: true, completion: nil)
     }
 }
